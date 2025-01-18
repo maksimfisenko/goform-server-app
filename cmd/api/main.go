@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/maksimfisenko/goform-server-app/internal/jsonlog"
 )
 
 const version = "1.0.0"
@@ -18,7 +19,7 @@ type config struct {
 
 type application struct {
 	config config
-	logger *log.Logger
+	logger *jsonlog.Logger
 }
 
 func main() {
@@ -28,7 +29,7 @@ func main() {
 	flag.StringVar(&cfg.env, "env", "development", "environment (development | staging | production)")
 	flag.Parse()
 
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	logger := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 
 	app := &application{
 		config: cfg,
@@ -43,7 +44,11 @@ func main() {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	logger.Printf("starting %s server on %s", cfg.env, srv.Addr)
+	logger.PrintInfo("starting server", map[string]string{
+		"addr": srv.Addr,
+		"env":  cfg.env,
+	})
+
 	err := srv.ListenAndServe()
-	logger.Fatal(err)
+	logger.PrintFatal(err, nil)
 }
