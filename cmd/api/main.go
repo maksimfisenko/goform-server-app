@@ -36,7 +36,7 @@ func main() {
 	flag.IntVar(&cfg.port, "port", 4000, "api server port")
 	flag.StringVar(&cfg.env, "env", "development", "environment (development | staging | production)")
 
-	flag.StringVar(&cfg.db.dsn, "db-dsn", "postgres://goform_user:goform_password@localhost/goform", "postgresql dsn")
+	flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("GOFORM_DB_DSN"), "postgresql dsn")
 
 	flag.Parse()
 
