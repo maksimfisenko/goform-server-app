@@ -10,6 +10,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/maksimfisenko/goform-server-app/internal/data"
 	"github.com/maksimfisenko/goform-server-app/internal/jsonlog"
 
 	_ "github.com/lib/pq"
@@ -29,8 +30,9 @@ type config struct {
 }
 
 type application struct {
-	config config
-	logger *jsonlog.Logger
+	config  config
+	logger  *jsonlog.Logger
+	storage data.Storage
 }
 
 func main() {
@@ -57,8 +59,9 @@ func main() {
 	logger.PrintInfo("database connection pool established", nil)
 
 	app := &application{
-		config: cfg,
-		logger: logger,
+		config:  cfg,
+		logger:  logger,
+		storage: data.NewStorage(db),
 	}
 
 	srv := &http.Server{
