@@ -1,8 +1,10 @@
 package data
 
 import (
+	"context"
 	"database/sql"
 	"errors"
+	"time"
 )
 
 type Role struct {
@@ -27,7 +29,10 @@ func (s RoleStorage) GetByTitle(title string) (*Role, error) {
 
 	var role Role
 
-	err := s.DB.QueryRow(query, title).Scan(
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err := s.DB.QueryRowContext(ctx, query, title).Scan(
 		&role.ID,
 		&role.Title,
 	)
