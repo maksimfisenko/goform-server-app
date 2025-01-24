@@ -76,6 +76,7 @@ func (s UserStorage) Insert(user *User) error {
 	defer cancel()
 
 	err := s.DB.QueryRowContext(ctx, query, args...).Scan(
+		&user.ID,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 		&user.Version,
