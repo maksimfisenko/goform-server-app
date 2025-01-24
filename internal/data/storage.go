@@ -11,10 +11,12 @@ var (
 
 type Storage struct {
 	Roles RoleStorage
+	Users UserStorage
 }
 
 func NewStorage(db *sql.DB) Storage {
 	return Storage{
 		Roles: RoleStorage{DB: db},
+		Users: UserStorage{DB: db},
 	}
 }
