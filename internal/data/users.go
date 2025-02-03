@@ -92,3 +92,45 @@ func (s UserStorage) Insert(user *User) error {
 
 	return nil
 }
+
+func (s UserStorage) Get(id int64) (*User, error) {
+	if id < 1 {
+		return nil, ErrRecordNotFound
+	}
+
+	query := `
+		SELECT
+    		id, role_id, name, email, is_activated, created_at, updated_at, version
+		FROM
+    		users.users
+		WHERE
+    		id = $1;
+	`
+
+	var user User
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err := s.DB.QueryRowContext(ctx, query, id).Scan(
+		&user.ID,
+		&user.RoleID,
+		&user.Name,
+		&user.Email,
+		&user.IsActivated,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+		&user.Version,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &user, nil
+}
